@@ -110,6 +110,10 @@ void mode(int freq[], const int answer[]){
 
         puts(""); // being new line of output
     }
+
+    // display the mode value
+    printf("\nThe mode is the most frequent value.\n"
+    "For this run the mode is %d which occurred %d times.\n", modeValue, largest);
 }
 
 // sorts an array with bubble sort algorithm
