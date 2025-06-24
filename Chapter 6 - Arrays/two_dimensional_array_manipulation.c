@@ -72,6 +72,16 @@ double average(const int setOfGrades[], size_t tests){
 // print array
 void printArray(const int grades[][EXAMS], size_t pupils, size_t tests){
     // output column heads
+    printf("%s", "                [0]  [1]  [2]  [3]"); 
     
+    // output grades in tabular format
+    for (size_t row = 0; row < pupils; ++row){
+        // output label for row
+        printf("\nstudentGrades[%zu] ", row);
 
+        // output grades for one student
+        for (size_t column = 0; column < tests; ++column) {
+            printf("%-5d", grades[row][column]);
+        }
+    }
 }
