@@ -12,6 +12,14 @@ int main(){
     puts("values in array1 by row are");
     printArray(array1);
 
+    int array2[ROW][COL] = {{1,2,3}, {4,5}};
+    puts("values in array2 by row are");
+    printArray(array2);
+
+    int array3[ROW][COL]= {{1, 2}, {4}};    
+    puts("Values in array3 by row are:");
+    printArray(array3);
+
     return (0);
 }
 
