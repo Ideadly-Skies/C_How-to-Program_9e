@@ -40,6 +40,6 @@ int main(void){
     // the size of the array first element 
     printf("     How many elements are there: %d\n",
         (int) (sizeof(array) / (sizeof(array[0]))));
-        
+    
     return (0);
 }
