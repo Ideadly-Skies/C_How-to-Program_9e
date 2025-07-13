@@ -25,7 +25,7 @@ int main(void) {
     const char *suit[SUITS] = {"Hearts", "Diamonds", "Clubs", "Spades"};
 
     // initialize the face array
-    const char *face[FACES] = {"Ace", "Deuce", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"};
+    const char *face[FACES] = {"Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"};
 
     deal(deck, face, suit);
 
@@ -40,6 +40,7 @@ void shuffle(int deck[][FACES]) {
         size_t column = 0;      // column number
 
         // choose new random location until unoccupied slot found
+        // indefinite shufflement may occur in here 
         do {
             row = rand() % SUITS;
             column = rand() % FACES;
