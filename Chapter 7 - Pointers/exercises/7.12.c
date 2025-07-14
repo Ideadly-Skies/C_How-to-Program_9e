@@ -8,13 +8,18 @@
 #define SUITS 4
 #define FACES 13
 #define CARDS 52
-#define HANDS 5
+#define HANDS 5 
 
 // prototypes
 void shuffle(int deck[][FACES]);
-void deal(int deck[][FACES], const char *face[], const char *suit[]);
-void draw(char *hand[], int deck[][FACES], const char *face[], const char *suit[], int SIZE);
-void copy(const char * const s1, char * const s2);
+void deal(int deck[][FACES], const char *face[], const char *suit[], int hand_suits[], int hand_faces[]);
+void find_pairs(int hand_faces[], int unique_pair[]);
+int contains_pair(int unique_pair[]);
+int contains_two_pairs(int unique_pair[]);
+int contains_three_pairs(int unique_pair[]);
+int four_of_a_kind(int unique_pair[]);
+int flush(int hand_suits[]);
+int straight(int hand_faces[]);
 
 int main(void) {
     // initialize deck array
@@ -25,71 +30,52 @@ int main(void) {
 
     // initialize the suit array
     // 
-    // each element is actually pointer to string's first character! (mind-blown)
+    // each element is actually pointer to string's first character!
     const char *suit[SUITS] = {"Hearts", "Diamonds", "Clubs", "Spades"};
 
     // initialize the face array
     const char *face[FACES] = {"Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"};
 
-    // deal(deck, face, suit);
-    
-    // declare a char string array
-    char default_string1[18];
-    char default_string2[18];
-    char default_string3[18];
-    char default_string4[18];
-    char default_string5[18];
+    // create a 5-hand card suit 
+    int hand_suits[HANDS];
+    int hand_faces[HANDS];
 
-    char *hand[HANDS] = {default_string1, default_string2, default_string3, default_string4, default_string5};
-    draw(hand, deck, face, suit, HANDS);
-
+    deal(deck, face, suit, hand_suits, hand_faces);
     for(size_t i = 0; i < HANDS; i++){
-        printf("%s ", hand[i]);
+        printf("%s of %s\n", suit[hand_suits[i]], face[hand_faces[i]]);
     }
+
     puts("");
 
-    return (0);
-}
-
-// populate hand with the cards
-void draw(char *hand[], int deck[][FACES], const char *face[], const char *suit[], int SIZE){ 
-    char last_string[18]; 
-    char constructed_string[18];
-
-    for(size_t i = 0; i < SIZE; i++){
-        size_t row = 0;     // row number
-        size_t column = 0;  // column number 
-
-        do {
-            // empty the string first in new run
-            constructed_string[0] = '\0';
-            row = rand() % SUITS;   
-            column = rand() % FACES;
-
-            // construct the card and store in constructed_string 
-            sprintf(constructed_string, "%5s of %-8s", face[column], suit[row]);
-
-        } while (strcmp(last_string, constructed_string) == 0);
-        
-        // debugging print statement 
-        // printf("constructed string: %s\n", constructed_string);        
-        // printf("last string: %s\n", last_string);
-
-        // update last string with newly constructed string
-        copy(constructed_string, last_string); 
-        copy(constructed_string, hand[i]);
-    }
-}
-
-// copy s2 to s1 using array subscript notation
-// 
-// s1 is a constant pointer to a character while
-// s2 is a constant pointer to a constant character
-void copy(const char * const s1, char * const s2){
-    // loop through until null character 
-    for (size_t i = 0; (s2[i] = s1[i]) != '\0'; i++){
-        ; // don't do anything in the function body
+    // find pairs and store it in unique_pair 
+    int unique_pair[HANDS]; 
+    find_pairs(hand_faces, unique_pair);
+    
+    if (contains_pair(unique_pair)){
+        printf("The hand contains only one unique pair\n");
     } 
+
+    if (contains_two_pairs(unique_pair)){
+        printf("The hand contains two unique pair\n");
+    }
+
+    if (contains_three_pairs(unique_pair)){
+        printf("The hand contains three unique pair\n");
+    }
+
+    if (four_of_a_kind(unique_pair)){
+        printf("The hand contains four unique pair\n");
+    }
+
+    if (flush(hand_suits)){
+        printf("Flush (all five cards with the same suits!)\n");
+    }
+
+    if (straight(hand_faces)){
+        printf("Straight (all five cards with consecutive face values!)\n");
+    }
+
+    return (0);
 }
 
 // shuffle cards in deck
@@ -111,19 +97,108 @@ void shuffle(int deck[][FACES]) {
 }
 
 // deal cards in deck
-void deal(int deck[][FACES], const char *face[], const char *suit[]) {
+void deal(int deck[][FACES], const char *face[], const char *suit[], int hand_suits[], int hand_faces[]) {
     // deal each of the cards
-    for (size_t card = 1; card <= CARDS; card++) {
+    for (size_t card = 1; card <= 5 ; card++) {
         for (size_t row = 0; row < SUITS; row++) {
             for (size_t col = 0; col < FACES; col++) {
                 if (deck[row][col] == card) {
-                    if (card % 4 == 0) {
-                        printf("%5s of %-8s  \n", face[col], suit[row]); // newline after every 4th card
-                    } else {
-                        printf("%5s of %-8s  \t", face[col], suit[row]); // tab otherwise
-                    }
+                    hand_suits[card-1] = row;   
+                    hand_faces[card-1] = col;
                 }
             }
         }
     }
+}
+
+void find_pairs(int hand_faces[], int unique_pair[]){
+    int k = 0;
+    int last_element = -1;
+
+    for(size_t i = 0; i < HANDS; i++) {
+        for(size_t j = i + 1; j < HANDS; j++) {
+            if (hand_faces[i] == hand_faces[j]) {
+                if (hand_faces[i] != last_element) {
+                    unique_pair[k++] = hand_faces[i];
+                    last_element = hand_faces[i];
+                }
+            }
+        }
+    }
+
+    // fill remaining with -1 (optional)
+    for (; k < HANDS; k++) {
+        unique_pair[k] = -1;
+    }
+}
+
+// this is bad practice... am i right?
+int contains_pair(int unique_pair[]){
+    int count = 0;
+    for(size_t i = 0; i < HANDS; i++){
+        if (unique_pair[i] != -1) count++;
+    }
+    return count == 1;
+}
+
+int contains_two_pairs(int unique_pair[]){
+    int count = 0;
+    for(size_t i = 0; i < HANDS; i++){
+        if (unique_pair[i] != -1) count++;
+    }
+    return count == 2;
+}
+
+int contains_three_pairs(int unique_pair[]){
+    int count = 0;
+    for(size_t i = 0; i < HANDS; i++){
+        if (unique_pair[i] != -1) count++;
+    }
+    return count == 3; 
+}
+
+int four_of_a_kind(int unique_pair[]){
+    int count = 0;
+    for(size_t i = 0; i < HANDS; i++){
+        if (unique_pair[i] != -1) count++;
+    }
+    return count == 4; 
+}
+
+int flush(int hand_suit[]){
+    int last_hand = hand_suit[0];
+    int count = 1;
+
+    for(size_t i = 1; i < HANDS; i++){
+        if (hand_suit[i] == last_hand) count++;
+    }
+    return count == HANDS;
+}
+
+int straight(int hand_face[]){
+    int temp[HANDS];
+    
+    // copy to temp array to avoid modifying the original
+    for(int i = 0; i < HANDS; i++){
+        temp[i] = hand_face[i];
+    }
+
+    // sort the array (simple bubble sort)
+    for(int i = 0; i < HANDS-1; i++){
+        for(int j = 0; j < HANDS - i - 1; j++){
+            if (temp[j] > temp[j+1]){
+                int t = temp[j];
+                temp[j] = temp[j + 1];
+                temp[j + 1] = t;
+            } 
+        }
+    }
+
+    // check if values are consecutive
+    for(int i = 0; i < HANDS-1; i++){
+        if(temp[i+1] != temp[i]+1) return 0;
+    }
+
+    // valid straight
+    return 1;
 }
