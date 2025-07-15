@@ -26,33 +26,58 @@ int straight(int hand_faces[]);                 // 6
 int calculatePoint(int unique_pair[], int hand_suits[], int hand_faces[]);
 
 // mark deck entry as unvisited other than hand_suits and hand_faces
-void drawNewCard(int deck[][FACES], int hand_suits[], int hand_faces[]);
+void drawNewCard(int deck[][FACES], int *suit, int *face);
+void replaceCards(int deck[][FACES], int hand_suits[], int hand_faces[]);
 
 int main(void) {
     // initialize deck array
     int deck[SUITS][FACES] = {0};
-
-    srand(time(NULL)); // seed the random-number generator
-    shuffle(deck);     // shuffle the deck
-
-    // initialize the suit array
-    // 
-    // each element is actually pointer to string's first character!
     const char *suit[SUITS] = {"Hearts", "Diamonds", "Clubs", "Spades"};
-
-    // initialize the face array
     const char *face[FACES] = {"Ace", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Jack", "Queen", "King"};
-
     int hand_suits[HANDS];
     int hand_faces[HANDS];
 
-    // Evaluation strategy
-    // 1. Track Remaining Cards - After Initial 5-card deal, mark remaining cards in the deck as "available"
-    // 2. Evaluate the dealer's hand using your CalculatePoint
-    // 3. Determine strategy:
-        //   1 Point = Keep the Pair, discard 3 other cards.
-        //   2 Point = Keep both pairs, discard the fifth card. 
-        //   0 Point = Discard all cards and draw a new hand. 
+    srand(time(NULL)); // seed the random-number generator
+    shuffle(deck);
+    
+    // initial deal
+    deal(deck, face, suit, hand_suits, hand_faces); 
+
+    printf("Initial Hand:\n");
+    for(size_t i = 0; i < HANDS; i++){
+        printf("Card %zu: %s of %s\n", i+1, face[hand_faces[i]], suit[hand_suits[i]]);
+    }
+
+    // store unique pairs in pairs 
+    int pairs[HANDS];
+    find_pairs(hand_faces, pairs); 
+    
+    // calculate points of initial deck
+    int points = calculatePoint(pairs, hand_suits, hand_faces);
+    printf("\noriginal deck points: %d\n", points);
+   
+    // evaluate + possible replace cards
+    replaceCards(deck, hand_suits, hand_faces); 
+
+    // after replacement
+    printf("\nAfter Replacement:\n");
+    for(size_t i = 0; i < HANDS; i++){
+        printf("Card %zu: %s of %s\n", i+1, face[hand_faces[i]], suit[hand_suits[i]]);
+    }
+
+    // store unique pairs in pairs
+    int new_pairs[HANDS]; 
+    find_pairs(hand_faces, new_pairs);
+
+    // calculate points of modified deck
+    points = calculatePoint(new_pairs, hand_suits, hand_faces);
+    printf("\nModified deck points: %d\n", points);
+    
+    puts("\npairs:");     
+    for (size_t i = 0; i < HANDS; i++){
+        if (pairs[i] != -1) printf("pair %zu: %s\n", i+1, face[new_pairs[i]]);
+    }
+
     return (0);
 }
 
@@ -204,11 +229,49 @@ int calculatePoint(int unique_pair[], int hand_suits[], int hand_faces[]){
     return points;
 }
 
-void drawNewCard(int deck[][FACES], int hand_suits[], int hand_faces[]){
-    for(size_t card = 0; card < HANDS; card++){
-        int hand_suits_index = hand_suits[card]; 
-        int hand_faces_index = hand_faces[card]; 
+void drawNewCard(int deck[][FACES], int *suit, int *face){
+    for(size_t row = 0; row < SUITS; row++){
+        for(size_t col = 0; col < FACES; col++){
+            if (deck[row][col] > 5) {
+                *suit = row;
+                *face = col;
+                deck[row][col] = 0; 
+                return;
+            }
+        }
+    } 
+}
 
-         
+void replaceCards(int deck[][FACES], int hand_suits[], int hand_faces[]){
+    int unique_pair[HANDS];
+    find_pairs(hand_faces, unique_pair);
+
+    int points = calculatePoint(unique_pair, hand_suits, hand_faces);
+    int keep[HANDS] = {0}; // 1 = keep, 0 = replace    
+
+    if (points >= 3) {
+        return; // strong hand - keep all
+    }
+
+    else if (contains_two_pairs(unique_pair)){
+        for (int i = 0; i < HANDS; i++){
+            for (int j = 0; j < HANDS; j++){
+                if (hand_faces[i] == unique_pair[i]) keep[i] = 1;
+            }
+        }
+    }
+
+    else if (contains_pair(unique_pair)){
+        for (int i = 0; i < HANDS; i++){
+            if (hand_faces[i] == unique_pair[0]) keep[i] = 1;
+        }
+    }
+
+    // else points == 0 -> replace all (default keep[i] = 0)
+
+    for(int i = 0; i < HANDS; i++){
+        if (!keep[i]){
+            drawNewCard(deck, &hand_suits[i], &hand_faces[i]);
+        }
     }
 }
