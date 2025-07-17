@@ -10,6 +10,10 @@ int maximum(const int grades[][EXAMS], size_t pupils, size_t tests);
 double average(const int setOfGrades[], size_t tests);
 void printArray(const int grades[][EXAMS], size_t pupils, size_t tests);
 
+// additional prototypes
+void printBanner();
+void selectChoice(int *option);
+
 // function main begins program execution
 int main(void){
     // initialize students grades for three students (rows)
@@ -19,21 +23,78 @@ int main(void){
         {70, 90, 86, 81},
     };
 
+    // assign each element to the corresponding
+    // function
+    // interface[0] = printArray;
+    // interface[1] = minimum;
+    // interface[2] = maximum;
+    // interface[3] = average;
+
+    // display school banner
+    printBanner();
+
+    int option;
+    selectChoice(&option); 
+
+    // function pointers
+    void *options[4] = {&minimum, &maximum, &average, &printArray};
+
+    // happy case - assuming user did not input 4
+    while (option != 4){
+        while (option < 1 || option > 4){
+            printf("\nYou have dialed an invalid option!");
+            selectChoice(&option);
+        }
+
+        // break out of the loop
+        if (option == 1){
+            int min = ( ( int (*)(const int grades[][EXAMS],size_t,size_t) ) options[0] )(studentGrades, STUDENTS, EXAMS);
+            printf("\n\nLowest Grade: %d\n", min);    
+        }
+        
+        else if (option == 2){
+            int max = ( ( int (*)(const int grades[][EXAMS],size_t,size_t) ) options[1] )(studentGrades, STUDENTS, EXAMS);
+            printf("\n\nHighest Grade: %d\n", max);
+        } 
+
+        else if (option == 3) {
+            for (size_t student = 0; student < STUDENTS; ++student) {
+                double average = ( ( double (*)(const int setOfGrades[], size_t tests) ) options[2] )(studentGrades[student], EXAMS); 
+                printf("The average grade for student %zu is %.2f\n", student, average);
+            }
+        } 
+        
+        // reprompt the user again
+        selectChoice(&option);  
+    }    
+
     // output array studentGrades 
-    puts("The array is:");
-    printArray(studentGrades, STUDENTS, EXAMS);
+    // puts("The array is:");
+    // printArray(studentGrades, STUDENTS, EXAMS);
 
     // determine smallest and largest grade values
-    printf("\n\nLowest Grade: %d\nHighest Grade: %d\n\n",
-        minimum(studentGrades, STUDENTS, EXAMS),
-        maximum(studentGrades, STUDENTS, EXAMS)
-    );
+    // printf("\n\nLowest Grade: %d\nHighest Grade: %d\n\n",
+    //     minimum(studentGrades, STUDENTS, EXAMS),
+    //     maximum(studentGrades, STUDENTS, EXAMS)
+    // );
 
     // calculate average grade for each student
-    for (size_t student = 0; student < STUDENTS; ++student) { 
-        printf("The average grade for student %zu is %.2f\n",
-        student, average(studentGrades[student], EXAMS));
-    }
+    // for (size_t student = 0; student < STUDENTS; ++student) { 
+    //     printf("The average grade for student %zu is %.2f\n",
+    //     student, average(studentGrades[student], EXAMS));
+    // }
+}
+
+void printBanner(){ 
+    puts("====================================================================================");
+    puts("            WELCOME TO BINUS INTERNATIONAL SCHOOL SERPONG MS/HS SYS                 ");
+    puts("====================================================================================");
+}
+
+void selectChoice(int *option){
+    printf("\n%s:\n  %s  %s  %s  %s\n","Enter a choice", " 1  Find the minimum grade\n", " 2  Find the maximum grade\n", " 3  Print the average on all tests for each student\n", " 4  End program\n");
+    printf("select option: "); 
+    scanf("%d", option); 
 }
 
 // Find the minimum value
