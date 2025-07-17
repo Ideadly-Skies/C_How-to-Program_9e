@@ -10,9 +10,10 @@ int maximum(const int grades[][EXAMS], size_t pupils, size_t tests);
 double average(const int setOfGrades[], size_t tests);
 void printArray(const int grades[][EXAMS], size_t pupils, size_t tests);
 
-// additional prototypes
-void printBanner();
+// prototypes
+void printBanner(void);
 void selectChoice(int *option);
+void exitMessage(void);
 
 // function main begins program execution
 int main(void){
@@ -58,6 +59,7 @@ int main(void){
         } 
 
         else if (option == 3) {
+            puts("\n");
             for (size_t student = 0; student < STUDENTS; ++student) {
                 double average = ( ( double (*)(const int setOfGrades[], size_t tests) ) options[2] )(studentGrades[student], EXAMS); 
                 printf("The average grade for student %zu is %.2f\n", student, average);
@@ -66,26 +68,15 @@ int main(void){
         
         // reprompt the user again
         selectChoice(&option);  
-    }    
+    }
 
-    // output array studentGrades 
-    // puts("The array is:");
-    // printArray(studentGrades, STUDENTS, EXAMS);
-
-    // determine smallest and largest grade values
-    // printf("\n\nLowest Grade: %d\nHighest Grade: %d\n\n",
-    //     minimum(studentGrades, STUDENTS, EXAMS),
-    //     maximum(studentGrades, STUDENTS, EXAMS)
-    // );
-
-    // calculate average grade for each student
-    // for (size_t student = 0; student < STUDENTS; ++student) { 
-    //     printf("The average grade for student %zu is %.2f\n",
-    //     student, average(studentGrades[student], EXAMS));
-    // }
+    // exit message
+    puts("");
+    exitMessage();
+    puts("");
 }
 
-void printBanner(){ 
+void printBanner(void){ 
     puts("====================================================================================");
     puts("            WELCOME TO BINUS INTERNATIONAL SCHOOL SERPONG MS/HS SYS                 ");
     puts("====================================================================================");
@@ -95,6 +86,12 @@ void selectChoice(int *option){
     printf("\n%s:\n  %s  %s  %s  %s\n","Enter a choice", " 1  Find the minimum grade\n", " 2  Find the maximum grade\n", " 3  Print the average on all tests for each student\n", " 4  End program\n");
     printf("select option: "); 
     scanf("%d", option); 
+}
+
+void exitMessage(void){
+    puts("====================================================================================");
+    puts("           THANK YOU FOR USING THE BINUS INTERNATIONAL SCHOOL PROGRAM               ");
+    puts("====================================================================================");
 }
 
 // Find the minimum value
