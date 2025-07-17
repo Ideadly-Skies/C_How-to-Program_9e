@@ -38,7 +38,7 @@ int main(void){
     selectChoice(&option); 
 
     // function pointers
-    void *options[4] = {&minimum, &maximum, &average, &printArray};
+    void *options[3] = {&minimum, &maximum, &average};
 
     // happy case - assuming user did not input 4
     while (option != 4){
