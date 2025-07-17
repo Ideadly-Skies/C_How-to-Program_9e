@@ -1,16 +1,17 @@
+// 7.20.c technically this works for 7.21 and 7.22 as well
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
 #define ROWS 12
-#define COLS 13
+#define COLS 14
 
 // starting X and Y values of maze
 int startX = 1, startY = 1;
 
 // ending X and Y values of
 int endX = 10;
-int endY = 11;
+int endY = 10;
 
 // constants to generate maze
 #define WALL_CHAR '#'
@@ -64,7 +65,7 @@ int main(void){
     maze[1][1] = EMPTY_CHAR;
 
     // set ending pos of maze
-    maze[10][11] = EMPTY_CHAR;
+    maze[10][10] = EMPTY_CHAR;
 
     // maze variables
     char wasHere[ROWS][COLS+1]; 
