@@ -41,22 +41,22 @@ int main(void){
         if (option == 1){
             // add two number together
             double sum = ( ( double (*)(double, double) ) options[0] )(num1, num2);
-            printf("\nThe sum of the two numbers are: %.2f\n", sum);
+            printf("\n%.2f + %.2f: %.2f\n",num1, num2, sum);
         }
         else if (option == 2){
             // sub two number together
             double sub = ( ( double (*)(double, double) ) options[1] )(num1, num2);
-            printf("\nThe sub of the two numbers are: %.2f\n", sub);
+            printf("\n%.2f - %.2f: %.2f\n",num1, num2, sub);
         }
         else if (option == 3){
             // mul two numbers together
             double mul = ( ( double (*)(double, double) ) options[2] )(num1, num2);
-            printf("\nThe mul of the two numbers are: %.2f\n", mul);
+            printf("\n%.2f * %.2f: %.2f\n",num1, num2, mul);
         } 
         else if (option == 4){
             // div two number together
-            double div = ( ( double (*)(double, double) ) options[  3] )(num1, num2);
-            printf("\nThe div of the two numbers are: %.2f\n", div);
+            double div = ( ( double (*)(double, double) ) options[3] )(num1, num2);
+            printf("\n%.2f / %.2f: %.2f\n",num1, num2, div);
         }
 
         selectOption(&option);
